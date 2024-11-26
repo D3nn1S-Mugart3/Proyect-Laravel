@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Image;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 
 class ImageController extends Controller
 {
@@ -37,12 +34,6 @@ class ImageController extends Controller
         return response($imagenes, 200);
     }
 
-    public function show()
-    {
-        $imagenes = Image::all(); // Obtén todos los registros de la tabla
-        return view('images.index', compact('imagenes')); // Pasa los datos a la vista
-    }
-
     public function postImagen(Request $request)
     {
         $validate = $request->validate([
@@ -66,29 +57,37 @@ class ImageController extends Controller
         return response()->json(['message' => 'Datos creados exitosamente.', 'data' => $imagenes], 201);
     }
 
-    public function putImagen(Request $request, $id)
+    public function postActualizarImagen(Request $request, $id)
     {
-        $validate = $request->validate([
-            'nombre' => 'sometimes|required|string|max:255',
-            'imagen' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        $imagenes = Image::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'sometimes|nullable|string|max:255',
+            'imagen' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // La imagen es opcional
             'descripcion' => 'sometimes|nullable|string',
         ]);
 
-        $imagen = Image::findOrFail($id);
-
-        $ruta_imagen = $imagen->imagen;
-
-        if ($request->hasFile('imagen')) {
-            $ruta_imagen = $request->file('imagen')->store('imagenes', 'public');
+        if ($request->has('nombre')) {
+            $imagenes->nombre = $request->nombre;
         }
 
-        $imagen->update([
-            'nombre' => $validate['nombre'] ?? $imagen->nombre,
-            'imagen' => $ruta_imagen,
-            'descripcion' => $validate['descripcion'] ?? $imagen->descripcion,
-        ]);
+        if ($request->hasFile('imagen')) {
+            if ($imagenes->imagen && file_exists(public_path('storage/' . $imagenes->imagen))) {
+                unlink(public_path('storage/' . $imagenes->imagen));
+            }
 
-        return response()->json(['message' => 'Datos actualizados exitosamente.', 'data' => $imagen->fresh()], 201);
+            $path = $request->file('imagen')->store('imagenes', 'public');
+
+            $imagenes->imagen = $path;
+        }
+
+        if ($request->has('descripcion')) {
+            $imagenes->descripcion = $request->descripcion;
+        }
+
+        $imagenes->save();
+
+        return response()->json($imagenes, 201);
     }
 
     public function deleteImagen($id)
