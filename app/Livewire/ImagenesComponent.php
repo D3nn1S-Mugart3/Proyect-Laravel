@@ -12,6 +12,7 @@ class ImagenesComponent extends Component
 
     public $imagenes, $nombre, $descripcion, $imagen, $imagenId;
     public $isEditMode = false;
+    public $isModalOpen = false;
 
     protected $rules = [
         'nombre' => 'required|string|max:255',
@@ -22,7 +23,9 @@ class ImagenesComponent extends Component
     public function render()
     {
         $this->imagenes = Image::all();
-        return view('livewire.imagenes-component');
+        return view('livewire.imagenes-component', [
+            'isModalOpen' => $this->isModalOpen,
+        ]);
     }
 
     public function store()
@@ -38,6 +41,7 @@ class ImagenesComponent extends Component
         ]);
 
         $this->resetForm();
+        $this->closeModal();
         session()->flash('message', 'Imagen creada exitosamente.');
     }
 
@@ -48,6 +52,7 @@ class ImagenesComponent extends Component
         $this->nombre = $imagen->nombre;
         $this->descripcion = $imagen->descripcion;
         $this->isEditMode = true;
+        $this->openModal();
     }
 
     public function update()
@@ -71,6 +76,7 @@ class ImagenesComponent extends Component
         ]);
 
         $this->resetForm();
+        $this->closeModal();
         session()->flash('message', 'Imagen actualizada exitosamente.');
     }
 
@@ -94,5 +100,15 @@ class ImagenesComponent extends Component
         $this->imagen = null;
         $this->imagenId = null;
         $this->isEditMode = false;
+    }
+
+    public function openModal()
+    {
+        $this->isModalOpen = true;
+    }
+
+    public function closeModal()
+    {
+        $this->isModalOpen = false;
     }
 }
