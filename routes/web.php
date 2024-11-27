@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ImageController;
+use App\Http\Controllers\ImageExportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,6 +17,7 @@ Route::middleware([
     })->name('dashboard');
 });
 
+Route::get('/export-pdf', [ImageExportController::class, 'exportPDF'])->name('export.pdf');
 // Route::get('/imagenes', [ImageController::class, 'getAllImagen'])->name('imagenes.index');
 // Route::get('/imagenes/create', [ImageController::class, 'create'])->name('imagenes.create'); // Ruta para el formulario de creación
 // Route::post('/imagenes', [ImageController::class, 'postImagen'])->name('imagenes.store');

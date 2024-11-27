@@ -3,16 +3,24 @@
 
     <!-- Mensaje de éxito -->
     @if (session()->has('message'))
-        <div class="bg-green-100 text-green-700 border border-green-400 p-3 rounded mb-4">
+        <div style="background-color: rgb(3, 179, 3);"
+            class="bg-green-100 text-green-700 border border-green-400 p-3 rounded mb-4">
             {{ session('message') }}
         </div>
     @endif
 
-    <!-- Botón para abrir el modal -->
-    <button style="background-color: rgb(115, 184, 248)" wire:click="$set('isModalOpen', true)"
-        class="bg-blue-400 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition">
-        {{ $isEditMode ? 'Editar Imagen' : 'Agregar Nueva Imagen' }}
-    </button>
+    <!-- Botón para abrir el modal y exportar PDF -->
+    <div class="flex justify-between items-center mb-4">
+        <button style="background-color: rgb(115, 184, 248)" wire:click="$set('isModalOpen', true)"
+            class="bg-blue-400 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition">
+            {{ $isEditMode ? 'Editar Imagen' : 'Agregar Nueva Imagen' }}
+        </button>
+
+        <button style="background-color: red;" wire:click="exportToPdf"
+            class="bg-red-500 text-white px-6 py-2 rounded-lg shadow hover:bg-red-600 transition">
+            Exportar a PDF
+        </button>
+    </div>
 
     <!-- Modal -->
     @if ($isModalOpen)
@@ -29,7 +37,7 @@
                         <input type="text" wire:model="nombre" id="nombre"
                             class="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-blue-200">
                         @error('nombre')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                            <span style="background-color: red; class="bg-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -44,7 +52,7 @@
                         <input type="file" wire:model="imagen" id="imagen"
                             class="border border-gray-300 rounded-lg p-2 w-full focus:ring focus:ring-blue-200">
                         @error('imagen')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                            <span style="background-color: red; class="bg-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 

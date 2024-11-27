@@ -19,7 +19,12 @@ class ImageController extends Controller
 
         $imagenes->makeHidden(['created_at', 'updated_at']);
 
-        return response()->json($imagenes, 200);
+        return response()->json([
+            'id' => $imagenes->id,
+            'nombre' => $imagenes->nombre,
+            'imagen_url' => url('storage/' . $imagenes->imagen),
+            'descripcion' => $imagenes->descripcion,
+        ], 200);
     }
 
     // Obtener todas las imágenes
@@ -31,7 +36,17 @@ class ImageController extends Controller
             return response()->json(['message' => 'No hay datos ingresados'], 404);
         }
 
-        return response($imagenes, 200);
+        // Transformar la colección a un formato adecuado
+        $imagenesTransformadas = $imagenes->map(function ($imagen) {
+            return [
+                'id' => $imagen->id,
+                'nombre' => $imagen->nombre,
+                'imagen_url' => url('storage/' . $imagen->imagen),
+                'descripcion' => $imagen->descripcion,
+            ];
+        });
+
+        return response()->json($imagenesTransformadas, 200);
     }
 
     public function postImagen(Request $request)

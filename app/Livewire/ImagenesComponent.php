@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Image;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -25,6 +26,7 @@ class ImagenesComponent extends Component
         $this->imagenes = Image::all();
         return view('livewire.imagenes-component', [
             'isModalOpen' => $this->isModalOpen,
+            'imagenes' => $this->imagenes,
         ]);
     }
 
@@ -110,5 +112,21 @@ class ImagenesComponent extends Component
     public function closeModal()
     {
         $this->isModalOpen = false;
+    }
+
+    public function mount()
+    {
+        $this->imagenes = Image::all();
+    }
+
+    public function exportToPdf()
+    {
+        $this->imagenes = Image::all();
+        $pdf = Pdf::loadView('exports.data', ['imagenes' => $this->imagenes]);
+
+        return response()->streamDownload(
+            fn() => print($pdf->output()),
+            'datos-exportados.pdf'
+        );
     }
 }
