@@ -22,7 +22,7 @@ class ImageController extends Controller
         return response()->json([
             'id' => $imagenes->id,
             'nombre' => $imagenes->nombre,
-            'imagen_url' => url('storage/' . $imagenes->imagen),
+            'imagen' => url('storage/' . $imagenes->imagen),
             'descripcion' => $imagenes->descripcion,
         ], 200);
     }
@@ -41,7 +41,7 @@ class ImageController extends Controller
             return [
                 'id' => $imagen->id,
                 'nombre' => $imagen->nombre,
-                'imagen_url' => url('storage/' . $imagen->imagen),
+                'imagen' => url('storage/' . $imagen->imagen),
                 'descripcion' => $imagen->descripcion,
             ];
         });
